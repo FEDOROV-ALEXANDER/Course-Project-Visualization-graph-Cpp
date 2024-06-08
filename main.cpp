@@ -52,10 +52,16 @@ void addEdge(MyGraph& g) {
         return;
     }
 
-    auto v1 = *(vi.first);
-    auto v2 = *(++vi.first);
-    boost::add_edge(v1, v2, g);
-    cout << "Добавлено ребро между вершинами " << v1 << " и " << v2 << endl;
+    int v1, v2;
+    cout << "Введите номера вершин для добавления ребра: ";
+    cin >> v1 >> v2;
+    if (v1 >= 0 && v1 < num_vertices(g) && v2 >= 0 && v2 < num_vertices(g)) {
+        boost::add_edge(v1, v2, g);
+        cout << "Добавлено ребро между вершинами " << v1 << " и " << v2 << endl;
+    }
+    else {
+        cout << "Неверные номера вершин." << endl;
+    }
 }
 
 void removeEdge(MyGraph& g) {
@@ -65,10 +71,22 @@ void removeEdge(MyGraph& g) {
         return;
     }
 
-    auto v1 = *(vi.first);
-    auto v2 = *(++vi.first);
-    boost::remove_edge(v1, v2, g);
-    cout << "Удалено ребро между вершинами " << v1 << " и " << v2 << endl;
+    int v1, v2;
+    cout << "Введите номера вершин для удаления ребра: ";
+    cin >> v1 >> v2;
+    if (v1 >= 0 && v1 < num_vertices(g) && v2 >= 0 && v2 < num_vertices(g)) {
+        auto edge_exists = boost::edge(v1, v2, g).second;
+        if (edge_exists) {
+            boost::remove_edge(v1, v2, g);
+            cout << "Удалено ребро между вершинами " << v1 << " и " << v2 << endl;
+        }
+        else {
+            cout << "Ребро между указанными вершинами не существует." << endl;
+        }
+    }
+    else {
+        cout << "Неверные номера вершин." << endl;
+    }
 }
 
 int main() {
