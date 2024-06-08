@@ -99,6 +99,7 @@ StyleCopReport.xml
 *.scc
 *.csv
 
+
 # Chutzpah Test files
 _Chutzpah*
 
@@ -362,3 +363,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/graph.dot
+/graph.svg
