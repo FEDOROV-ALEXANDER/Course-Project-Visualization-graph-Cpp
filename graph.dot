@@ -1,9 +1,9 @@
 graph G {
-0[label=3];
-1[label=2];
-2[label=3];
-3[label=2];
-4[label=3];
+0[color=red];
+1[color=green];
+2[color=red];
+3[color=green];
+4[color=red];
 2--0 ;
 0--3 ;
 1--4 ;

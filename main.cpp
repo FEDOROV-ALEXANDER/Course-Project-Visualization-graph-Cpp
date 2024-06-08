@@ -8,6 +8,21 @@
 
 using namespace std;
 
+// Функция-writer для добавления цветов вершин в файл .dot
+template <typename VertexColorMap>
+class ColorWriter {
+public:
+    ColorWriter(VertexColorMap colorMap) : colorMap(colorMap) {}
+
+    template <typename Vertex>
+    void operator()(ostream& out, const Vertex& v) const {
+        out << "[color=" << (get(colorMap, v) == boost::red_color ? "red" : "green") << "]";
+    }
+
+private:
+    VertexColorMap colorMap;
+};
+
 int main() {
     // Тип данных для графа
     typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
@@ -51,9 +66,9 @@ int main() {
         colorMap[*it] = (it - vi.first) % 2 == 0 ? boost::red_color : boost::green_color;
     }
 
-    // Сохранение изменённого графа в формате DOT
+    // Сохранение изменённого графа в формате DOT с указанием цветов вершин
     f.open("graph.dot");
-    boost::write_graphviz(f, g, boost::make_label_writer(colorMap));
+    boost::write_graphviz(f, g, ColorWriter<boost::property_map<MyGraph, boost::vertex_color_t>::type>(colorMap));
     f.close();
 
     // Обработка графа с помощью Graphviz
