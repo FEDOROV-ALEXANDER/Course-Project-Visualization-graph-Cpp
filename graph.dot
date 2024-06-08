@@ -1,11 +1,8 @@
 graph G {
-0[color=red];
+0[color=green];
 1[color=green];
-2[color=red];
-3[color=green];
-4[color=red];
-2--0 ;
-0--3 ;
-1--4 ;
-3--4 ;
+2[color=green];
+0--1 ;
+0--1 ;
+0--1 ;
 }

@@ -8,6 +8,10 @@
 
 using namespace std;
 
+// Тип данных для графа
+typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
+    boost::property<boost::vertex_color_t, boost::default_color_type>> MyGraph;
+
 // Функция-writer для добавления цветов вершин в файл .dot
 template <typename VertexColorMap>
 class ColorWriter {
@@ -23,57 +27,90 @@ private:
     VertexColorMap colorMap;
 };
 
-int main() {
-    // Тип данных для графа
-    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
-        boost::property<boost::vertex_color_t, boost::default_color_type>> MyGraph;
+// Функции для работы с графом
+void addVertex(MyGraph& g) {
+    auto v = boost::add_vertex(g);
+    cout << "Добавлена вершина " << v << endl;
+}
 
-    // Создание графа с 3 вершинами
-    MyGraph g;
-    auto v1 = boost::add_vertex(g);
-    auto v2 = boost::add_vertex(g);
-    auto v3 = boost::add_vertex(g);
-
-    // Добавление ребер
-    boost::add_edge(v1, v2, g);
-    boost::add_edge(v2, v3, g);
-    boost::add_edge(v3, v1, g);
-
-    // Сохранение графа в формате DOT
-    ofstream f("graph.dot");
-    boost::write_graphviz(f, g);
-    f.close();
-
-    // Обработка графа с помощью Graphviz
-    system("\"C:/Program Files/Graphviz/bin/dot.exe\" graph.dot -Kcirco -Tsvg -o graph.svg");
-    system("start graph.svg");
-
-    // Удаление ребер
-    boost::remove_edge(v1, v2, g);
-    boost::remove_edge(v2, v3, g);
-
-    // Добавление новых вершин и ребер
-    auto v4 = boost::add_vertex(g);
-    auto v5 = boost::add_vertex(g);
-    boost::add_edge(v1, v4, g);
-    boost::add_edge(v2, v5, g);
-    boost::add_edge(v4, v5, g);
-
-    // Раскраска вершин
-    boost::property_map<MyGraph, boost::vertex_color_t>::type colorMap = get(boost::vertex_color, g);
+void removeVertex(MyGraph& g) {
     auto vi = vertices(g);
-    for (auto it = vi.first; it != vi.second; ++it) {
-        colorMap[*it] = (it - vi.first) % 2 == 0 ? boost::red_color : boost::green_color;
+    if (vi.first == vi.second) {
+        cout << "Граф пуст, нечего удалять." << endl;
+        return;
     }
 
-    // Сохранение изменённого графа в формате DOT с указанием цветов вершин
-    f.open("graph.dot");
-    boost::write_graphviz(f, g, ColorWriter<boost::property_map<MyGraph, boost::vertex_color_t>::type>(colorMap));
-    f.close();
+    auto v = *(vi.first);
+    boost::remove_vertex(v, g);
+    cout << "Удалена вершина " << v << endl;
+}
 
-    // Обработка графа с помощью Graphviz
-    system("\"C:/Program Files/Graphviz/bin/dot.exe\" graph.dot -Kcirco -Tsvg -o graph_updated.svg");
-    system("start graph_updated.svg");
+void addEdge(MyGraph& g) {
+    auto vi = vertices(g);
+    if (vi.first == vi.second) {
+        cout << "Граф пуст, нечего добавлять." << endl;
+        return;
+    }
+
+    auto v1 = *(vi.first);
+    auto v2 = *(++vi.first);
+    boost::add_edge(v1, v2, g);
+    cout << "Добавлено ребро между вершинами " << v1 << " и " << v2 << endl;
+}
+
+void removeEdge(MyGraph& g) {
+    auto vi = vertices(g);
+    if (vi.first == vi.second) {
+        cout << "Граф пуст, нечего удалять." << endl;
+        return;
+    }
+
+    auto v1 = *(vi.first);
+    auto v2 = *(++vi.first);
+    boost::remove_edge(v1, v2, g);
+    cout << "Удалено ребро между вершинами " << v1 << " и " << v2 << endl;
+}
+
+int main() {
+    MyGraph g;
+    string command;
+    setlocale(LC_ALL, "Russian");
+    // Создание начального графа
+    auto v1 = boost::add_vertex(g);
+    auto v2 = boost::add_vertex(g);
+    boost::add_edge(v1, v2, g);
+
+    while (true) {
+        cout << "Введите команду (add_vertex, remove_vertex, add_edge, remove_edge, draw, exit): ";
+        cin >> command;
+
+        if (command == "add_vertex") {
+            addVertex(g);
+        }
+        else if (command == "remove_vertex") {
+            removeVertex(g);
+        }
+        else if (command == "add_edge") {
+            addEdge(g);
+        }
+        else if (command == "remove_edge") {
+            removeEdge(g);
+        }
+        else if (command == "draw") {
+            ofstream f("graph.dot");
+            boost::write_graphviz(f, g, ColorWriter<boost::property_map<MyGraph, boost::vertex_color_t>::type>(get(boost::vertex_color, g)));
+            f.close();
+
+            system("\"C:/Program Files/Graphviz/bin/dot.exe\" graph.dot -Kcirco -Tsvg -o graph.svg");
+            system("start graph.svg");
+        }
+        else if (command == "exit") {
+            break;
+        }
+        else {
+            cout << "Неизвестная команда" << endl;
+        }
+    }
 
     return 0;
 }
