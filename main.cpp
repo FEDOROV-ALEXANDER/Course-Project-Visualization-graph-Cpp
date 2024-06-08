@@ -33,16 +33,15 @@ void addVertex(MyGraph& g) {
     cout << "Добавлена вершина " << v << endl;
 }
 
-void removeVertex(MyGraph& g) {
-    auto vi = vertices(g);
-    if (vi.first == vi.second) {
-        cout << "Граф пуст, нечего удалять." << endl;
+void removeVertex(MyGraph& g, int vertexNumber) {
+    if (vertexNumber < 0 || vertexNumber >= num_vertices(g)) {
+        cout << "Неверный номер вершины." << endl;
         return;
     }
 
-    auto v = *(vi.first);
+    auto v = vertex(vertexNumber, g);
     boost::remove_vertex(v, g);
-    cout << "Удалена вершина " << v << endl;
+    cout << "Удалена вершина " << vertexNumber << endl;
 }
 
 void addEdge(MyGraph& g) {
@@ -106,7 +105,10 @@ int main() {
             addVertex(g);
         }
         else if (command == "remove_vertex") {
-            removeVertex(g);
+            int vertexNumber;
+            cout << "Введите номер вершины для удаления: ";
+            cin >> vertexNumber;
+            removeVertex(g, vertexNumber);
         }
         else if (command == "add_edge") {
             addEdge(g);
